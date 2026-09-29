@@ -1,0 +1,45 @@
+name: Install VIREN project files
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Find VIREN ZIP
+        id: find_zip
+        shell: bash
+        run: |
+          ZIP=$(find . -maxdepth 2 -type f -name 'VIREN-root-project.zip' -print -quit)
+          if [ -z "$ZIP" ]; then
+            echo "VIREN-root-project.zip not found"
+            exit 1
+          fi
+          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+
+      - name: Extract VIREN project
+        shell: bash
+        run: |
+          mkdir -p /tmp/viren-project
+          unzip -q "${{ steps.find_zip.outputs.zip }}" -d /tmp/viren-project
+
+          rm -rf -- .[^.]* ..?* *
+          cp -a /tmp/viren-project/. .
+
+          rm -f "${{ steps.find_zip.outputs.zip }}"
+
+      - name: Commit VIREN project
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Install VIREN project at repository root" || echo "No changes to commit"
+          git push
