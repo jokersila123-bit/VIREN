@@ -1,0 +1,38 @@
+{
+  "name": "viren-vrn",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "tsc --noEmit",
+    "verify": "npm run preflight && npm run contract && npm run lint && npm run build",
+    "preflight": "node scripts/preflight.mjs",
+    "contract": "node scripts/contract-check.mjs",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "build:cloudflare": "opennextjs-cloudflare build"
+  },
+  "dependencies": {
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.117.2",
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "lucide-react": "1.48.0"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "@types/node": "22.18.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@opennextjs/cloudflare": "1.20.6",
+    "wrangler": "4.142.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
