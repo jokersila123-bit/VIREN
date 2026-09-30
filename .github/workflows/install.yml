@@ -1,1 +1,61 @@
+name: Install VIREN project
 
+on:
+  push:
+    paths:
+      - 'VIREN-root-project.zip'
+      - '.github/workflows/install.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract VIREN project
+        shell: bash
+        run: |
+          set -e
+          test -f VIREN-root-project.zip
+          rm -rf /tmp/viren
+          mkdir -p /tmp/viren
+          unzip -q VIREN-root-project.zip -d /tmp/viren
+          test -d /tmp/viren/app
+          test -d /tmp/viren/components
+          test -f /tmp/viren/package.json
+
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name '.git' \
+            ! -name '.github' \
+            ! -name 'VIREN-root-project.zip' \
+            -exec rm -rf -- {} +
+
+          cp -a /tmp/viren/. .
+          rm -f VIREN-root-project.zip
+
+      - name: Verify project structure
+        shell: bash
+        run: |
+          test -d app
+          test -d components
+          test -d lib
+          test -d public
+          test -d scripts
+          test -d sql
+          test -f package.json
+          test -f wrangler.jsonc
+          echo 'VIREN project structure is ready.'
+
+      - name: Commit project
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Install VIREN project at repository root' || exit 0
+          git push
